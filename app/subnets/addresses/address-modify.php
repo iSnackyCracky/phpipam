@@ -353,7 +353,7 @@ function validate_mac (ip, mac, sectionId, vlanId, id) {
 	}
 
     // location
-    if($User->settings->enableLocations=="1") { ?>
+    if($User->settings->enableLocations=="1" and $User->is_admin(false)) { ?>
 	<tr>
 		<td>
 			<?php

@@ -53,8 +53,10 @@ else {
 	if(@$_GET['subnets']=="on" && strlen($_GET['ip'])>0 ) 	{ include(dirname(__FILE__).'/search_results/search-results_subnets.php'); }
 	// addresses
 	if(@$_GET['addresses']=="on" && strlen($_GET['ip'])>0) 	{ include(dirname(__FILE__).'/search_results/search-results_addresses.php'); }
-	// vlan
-	if(@$_GET['vlans']=="on" && strlen($_GET['ip'])>0) 	    { include(dirname(__FILE__).'/search_results/search-results_vlans.php'); }
+  if ($User->is_admin(false)) {
+      // vlan
+      if(@$_GET['vlans']=="on" && strlen($_GET['ip'])>0) 	    { include(dirname(__FILE__).'/search_results/search-results_vlans.php'); }
+  }
 	// vrf
 	if(@$_GET['vrf']=="on" && strlen($_GET['ip'])>0) 	    { include(dirname(__FILE__).'/search_results/search-results_vrfs.php'); }
 	// pstn

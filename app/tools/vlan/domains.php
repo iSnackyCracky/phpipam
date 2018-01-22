@@ -2,7 +2,9 @@
 <hr>
 
 <!-- Manage link -->
-<?php if($User->is_admin(false)===true) { ?>
+<?php if(!($User->is_admin(false))) { ?>
+<?php $User->is_admin(); ?>
+<?php } else { ?>
 <?php if($_GET['page']=="administration") { ?>
 <div class="btn-group" style="margin-bottom:10px;">
 	<button class="btn btn-sm btn-default editVLANdomain" data-action="add" data-domainid="" style="margin-bottom:10px;"><i class="fa fa-plus"></i> <?php print _('Add L2 Domain'); ?></button>
@@ -11,7 +13,6 @@
 </div>
 <?php } else { ?>
 	<a class="btn btn-sm btn-default" href="<?php print create_link("administration", "vlans"); ?>" style='margin-bottom:15px;'><i class='fa fa-pencil'></i> <?php print _("Manage"); ?></a>
-<?php } ?>
 <?php } ?>
 
 
@@ -82,3 +83,4 @@ foreach($vlan_domains as $domain) {
 }
 ?>
 </table>
+<?php } ?>

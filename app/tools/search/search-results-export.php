@@ -83,8 +83,10 @@ $colSpan 	= $fieldSize + $mySize + 3;
 if(@$_REQUEST['addresses']=="on") 	{ $result_addresses = $Tools->search_addresses($search_term, $search_term_edited['high'], $search_term_edited['low'], $custom_address_fields); }
 # search subnets
 if(@$_REQUEST['subnets']=="on") 	{ $result_subnets   = $Tools->search_subnets($search_term, $search_term_edited['high'], $search_term_edited['low'], $_REQUEST['ip'], $custom_subnet_fields); }
-# search vlans
-if(@$_REQUEST['vlans']=="on") 		{ $result_vlans     = $Tools->search_vlans($search_term, $custom_vlan_fields); }
+if ($User->is_admin(false)) {
+    # search vlans
+    if(@$_REQUEST['vlans']=="on") 		{ $result_vlans     = $Tools->search_vlans($search_term, $custom_vlan_fields); }
+}
 # search vrf
 if(@$_REQUEST['vrf']=="on") 		{ $result_vrf       = $Tools->search_vrfs($search_term, $custom_vrf_fields); }
 # search circuits

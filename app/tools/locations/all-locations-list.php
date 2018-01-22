@@ -3,19 +3,19 @@
 
 <div class="btn-group">
     <?php if($_GET['page']=="administration") { ?>
-	<a href="" class='btn btn-sm btn-default editLocation' data-action='add' data-id='' style='margin-bottom:10px;'><i class='fa fa-plus'></i> <?php print _('Add location'); ?></a>
-	<?php } else { ?>
-	<a href="<?php print create_link("administration", "locations") ?>" class='btn btn-sm btn-default' style='margin-bottom:10px;'><i class='fa fa-pencil'></i> <?php print _('Manage'); ?></a>
-	<?php } ?>
-	<a href="<?php print create_link("tools", "locations", "map") ?>" class='btn btn-sm btn-default' style='margin-bottom:10px;'><i class='fa fa-map'></i> <?php print _('Map'); ?></a>
+  <a href="" class='btn btn-sm btn-default editLocation' data-action='add' data-id='' style='margin-bottom:10px;'><i class='fa fa-plus'></i> <?php print _('Add location'); ?></a>
+  <?php } else { ?>
+  <a href="<?php print create_link("administration", "locations") ?>" class='btn btn-sm btn-default' style='margin-bottom:10px;'><i class='fa fa-pencil'></i> <?php print _('Manage'); ?></a>
+  <?php } ?>
+  <a href="<?php print create_link("tools", "locations", "map") ?>" class='btn btn-sm btn-default' style='margin-bottom:10px;'><i class='fa fa-map'></i> <?php print _('Map'); ?></a>
 </div>
 <br>
 
 <?php
 
 /**
- * Script to print locations
- ***************************/
+* Script to print locations
+***************************/
 
 # verify that user is logged in
 $User->check_user_session();
@@ -23,6 +23,9 @@ $User->check_user_session();
 # check that location support isenabled
 if ($User->settings->enableLocations!="1") {
     $Result->show("danger", _("Locations module disabled."), false);
+}
+else if (!($User->is_admin(false))) {
+    $User->is_admin();
 }
 else {
     # fetch all locations
@@ -40,14 +43,14 @@ else {
     print " <th>"._('Description')."</th>";
     print " <th>"._('Address')."</th>";
     print " <th>"._('Coordinates')."</th>";
-	if(sizeof($custom) > 0) {
-		foreach($custom as $field) {
-			if(!in_array($field['name'], $hidden_custom_fields)) {
-				print "<th class='hidden-xs hidden-sm hidden-md'>".$Tools->print_custom_field_name ($field['name'])."</th>";
-				$colspan++;
-			}
-		}
-	}
+  if(sizeof($custom) > 0) {
+    foreach($custom as $field) {
+      if(!in_array($field['name'], $hidden_custom_fields)) {
+        print "<th class='hidden-xs hidden-sm hidden-md'>".$Tools->print_custom_field_name ($field['name'])."</th>";
+        $colspan++;
+      }
+    }
+  }
     if($admin)
     print " <th style='width:80px'></th>";
     print "</tr>";
@@ -81,26 +84,26 @@ else {
             // coordinates
             if(strlen($l->lat)>0 || strlen($l->long)==0) { print "<td><span class='text-muted'>$l->lat / $l->long</span></td>"; }
             else                                         { print "<td>".$Result->show("warning", _("Location not set"), false, false, true)."</td>"; }
-    		//custom
-    		if(sizeof($custom) > 0) {
-    			foreach($custom as $field) {
-    				if(!in_array($field['name'], $hidden_custom_fields)) {
-    					print "<td class='hidden-xs hidden-sm hidden-md'>";
+        //custom
+        if(sizeof($custom) > 0) {
+          foreach($custom as $field) {
+            if(!in_array($field['name'], $hidden_custom_fields)) {
+              print "<td class='hidden-xs hidden-sm hidden-md'>";
                         $Tools->print_custom_field ($field['type'], $l->{$field['name']});
-    					print "</td>";
-    				}
-    			}
-    		}
+              print "</td>";
+            }
+          }
+        }
             // actions
             if($admin) {
-    		print "	<td class='actions'>";
-    		print "	<div class='btn-group'>";
-    		print "		<a href='' class='btn btn-xs btn-default editLocation' data-action='edit'   data-id='$l->id'><i class='fa fa-pencil'></i></a>";
-    		print "		<a href='".create_link("tools", "locations", $l->id)."' class='btn btn-xs btn-default' ><i class='fa fa-eye'></i></a>";
-    		print "		<a href='' class='btn btn-xs btn-default editLocation' data-action='delete' data-id='$l->id'><i class='fa fa-times'></i></a>";
-    		print "	</div>";
-    		print " </td>";
-    		}
+        print "	<td class='actions'>";
+        print "	<div class='btn-group'>";
+        print "		<a href='' class='btn btn-xs btn-default editLocation' data-action='edit'   data-id='$l->id'><i class='fa fa-pencil'></i></a>";
+        print "		<a href='".create_link("tools", "locations", $l->id)."' class='btn btn-xs btn-default' ><i class='fa fa-eye'></i></a>";
+        print "		<a href='' class='btn btn-xs btn-default editLocation' data-action='delete' data-id='$l->id'><i class='fa fa-times'></i></a>";
+        print "	</div>";
+        print " </td>";
+        }
 
             print "</tr>";
         }
