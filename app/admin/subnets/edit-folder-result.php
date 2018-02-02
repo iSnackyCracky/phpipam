@@ -77,7 +77,8 @@ unset ($subnet_old_details['subnet'],$subnet_old_details['allowRequests'],$subne
 if($_POST['action']=="add") {
 	# root
 	if($_POST['masterSubnetId']==0) {
-		$_POST['permissions'] = $section['permissions'];
+		# Auf neue "Root-Ordner" (also oberste Ordner in einer Sektion) standardmäßig keine Rechte vergeben (nur guest und operator default)
+		$_POST['permissions'] = '{"2":"2","3":"1"}';
 	}
 	# nested - inherit parent permissions
 	else {
