@@ -786,7 +786,7 @@ class Tools extends Common_functions {
 		# fetch all custom fields
 		$custom_fields = $this->fetch_custom_fields ($table);
 		# make numberic array
-		if(sizeof($custom_fields>0)) {
+		if(sizeof($custom_fields)>0) {
 			foreach($custom_fields as $f) {
 				$out[] = $f;
 			}
@@ -1342,7 +1342,7 @@ class Tools extends Common_functions {
 		try { $count = $this->Database->getObjectQuery($query); }
 		catch (Exception $e) { $this->Result->show("danger", $e->getMessage(), true);	return false; }
 		# return true if it exists
-		return ($count !== null && sizeof($count) > 0 ? true : false);
+		return $count!== null ? true : false;
 	}
 
 	/**
@@ -1450,7 +1450,7 @@ class Tools extends Common_functions {
 	 * Verify that all required indexes are present in database
 	 *
 	 * @method verify_database_indexes
-	 * @return [type]                  [description]
+	 * @return bool
 	 */
 	public function verify_database_indexes () {
 		// get indexes from schema
@@ -3147,6 +3147,7 @@ class Tools extends Common_functions {
     					$outFile[$m] .= $this->csv_delimiter.$data->val($m,$currLett++);
     				}
     			}
+    			$outFile[$m] = $this->convert_encoding_to_UTF8($outFile[$m]);
     		}
     	};
     	// return

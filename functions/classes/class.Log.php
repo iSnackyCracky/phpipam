@@ -98,6 +98,14 @@ class Logging extends Common_functions {
 	protected $object_old;
 
 	/**
+	 * Original Object (before logging modifications)
+	 *
+	 * @var mixed
+	 * @access protected
+	 */
+	protected $object_orig;
+
+	/**
 	 * object_type
 	 *
 	 * @var mixed
@@ -728,6 +736,8 @@ class Logging extends Common_functions {
 		//cast diff objects as array
 		$this->object_old = (array) $old;		// new object
 		$this->object_new = (array) $new;		// old object
+		// Save original unmodified values to construct URLs.
+		$this->object_orig = ($action == "add") ? $this->object_new : $this->object_old;
 
 		// validate - if object should write changelog or not
 		if ($this->changelog_validate_object () === false) {
@@ -1791,7 +1801,7 @@ class Logging extends Common_functions {
 		if ( $this->object_new['isFolder']=="1" || $this->object_old['isFolder']=="1" )	{ $this->object_type = "folder"; }
 
 		# set subject
-		$subject = string;
+		$subject = "";
 		if($this->object_action == "add") 		{ $subject = ucwords($this->object_type)." create notification"; }
 		elseif($this->object_action == "edit") 	{ $subject = ucwords($this->object_type)." change notification"; }
 		elseif($this->object_action == "delete"){ $subject = ucwords($this->object_type)." delete notification"; }
@@ -1801,11 +1811,11 @@ class Logging extends Common_functions {
 		if ($this->object_type=="address")		{ $address_subnet = (array) $this->Tools->fetch_object("subnets", "id", $obj_details['subnetId']); }
 
 		# set object details
-		$details = string;
+		$details = "";
 		if ($this->object_type=="section") 		{ $details = "<a style='font-family:Helvetica, Verdana, Arial, sans-serif; font-size:12px;color:#a0ce4e;' href='".$this->createURL().create_link("subnets",$obj_details['id'])."'>".$obj_details['name'] . "(".$obj_details['description'].") - id ".$obj_details['id']."</a>"; }
-		elseif ($this->object_type=="subnet")	{ $details = "<a style='font-family:Helvetica, Verdana, Arial, sans-serif; font-size:12px;color:#a0ce4e;' href='".$this->createURL().create_link("subnets",$obj_details['sectionId'],$obj_details['id'])."'>".$this->Subnets->transform_address ($obj_details['subnet'], "dotted")."/".$obj_details['mask']." (".$obj_details['description'].") - id ".$obj_details['id']."</a>"; }
-		elseif ($this->object_type=="folder")	{ $details = "<a style='font-family:Helvetica, Verdana, Arial, sans-serif; font-size:12px;color:#a0ce4e;' href='".$this->createURL().create_link("folder",$obj_details['sectionId'],$obj_details['id'])."'>".$obj_details['description']." - id ".$obj_details['id']."</a>"; }
-		elseif ($this->object_type=="address")	{ $details = "<a style='font-family:Helvetica, Verdana, Arial, sans-serif; font-size:12px;color:#a0ce4e;' href='".$this->createURL().create_link("subnets",$address_subnet['sectionId'],$obj_details['subnetId'],"address-details",$obj_details['id'])."'>".$this->Subnets->transform_address ($obj_details['ip_addr'], "dotted")." ( hostname ".$obj_details['hostname'].", subnet: ".$this->Subnets->transform_address ($address_subnet['subnet'], "dotted")."/".$address_subnet['mask'].")- id ".$obj_details['id']."</a>"; }
+		elseif ($this->object_type=="subnet")	{ $details = "<a style='font-family:Helvetica, Verdana, Arial, sans-serif; font-size:12px;color:#a0ce4e;' href='".$this->createURL().create_link("subnets",$this->object_orig['sectionId'],$obj_details['id'])."'>".$this->Subnets->transform_address ($obj_details['subnet'], "dotted")."/".$obj_details['mask']." (".$obj_details['description'].") - id ".$obj_details['id']."</a>"; }
+		elseif ($this->object_type=="folder")	{ $details = "<a style='font-family:Helvetica, Verdana, Arial, sans-serif; font-size:12px;color:#a0ce4e;' href='".$this->createURL().create_link("folder",$this->object_orig['sectionId'],$obj_details['id'])."'>".$obj_details['description']." - id ".$obj_details['id']."</a>"; }
+		elseif ($this->object_type=="address")	{ $details = "<a style='font-family:Helvetica, Verdana, Arial, sans-serif; font-size:12px;color:#a0ce4e;' href='".$this->createURL().create_link("subnets",$this->object_orig['section'],$this->object_orig['subnetId'],"address-details",$this->object_orig['id'])."'>".$this->Subnets->transform_address ($obj_details['ip_addr'], "dotted")." ( hostname ".$obj_details['hostname'].", subnet: ".$this->Subnets->transform_address ($address_subnet['subnet'], "dotted")."/".$address_subnet['mask'].")- id ".$obj_details['id']."</a>"; }
 		elseif ($this->object_type=="address range")	{ $details = $changelog; }
 
 		# remove subnet sectionId
@@ -1867,12 +1877,12 @@ class Logging extends Common_functions {
 		# set plain content
 		$content_plain = array();
 		$content_plain[] = "Object type: ".$this->object_type;
-		$content_plain[] = "Object details: ".$details;
+		$content_plain[] = "Object details: ".strip_tags($details);
 		$content_plain[] = "User: ".$this->user->real_name." (".$this->user->username.")";
 		$content_plain[] = "Action: ".$this->object_action;
 		$content_plain[] = "Date: ".date("Y-m-d H:i:s");
 		$content_plain[] = "\r\n--------------------\r\n";
-		$content_plain[] = str_replace("<br>", "\r\n",$changelog);
+		$content_plain[] = implode("\r\n", (array) $changelog);
 
 
 		# get all admins and check who to end mail to
