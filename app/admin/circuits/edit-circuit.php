@@ -5,7 +5,7 @@
  ************************/
 
 /* functions */
-require( dirname(__FILE__) . '/../../../functions/functions.php');
+require_once( dirname(__FILE__) . '/../../../functions/functions.php' );
 
 # initialize user object
 $Database 	= new Database_PDO;
@@ -21,7 +21,7 @@ $User->check_user_session();
 if(!($User->is_admin(false) || $User->user->editCircuits=="Yes")) { $Result->show("danger", _("You are not allowed to modify Circuit details"), true, true); }
 
 # create csrf token
-$csrf = $User->csrf_cookie ("create", "circuit");
+$csrf = $User->Crypto->csrf_cookie ("create", "circuit");
 
 # strip tags - XSS
 $_POST = $User->strip_input_tags ($_POST);
@@ -58,9 +58,8 @@ if($circuit_providers===false) 	{
 	$Result->show("danger", _("No circuit providers configured."."<hr>".$btn), true, true);
 }
 
-# get types and parse from enum
-$type_desc = $Database->getFieldInfo ("circuits", "type");
-$all_types = explode(",", str_replace(array("enum","(",")","'"), "",$type_desc->Type));
+# get types
+$all_types = $Tools->fetch_all_objects ("circuitTypes", "ctname");
 
 # set readonly flag
 $readonly = $_POST['action']=="delete" ? "readonly" : "";
@@ -122,7 +121,7 @@ $(document).ready(function(){
 				<?php
 				foreach ($all_types as $type) {
 					$selected = $circuit->type == $type ? "selected" : "";
-					print "<option value='$type' $selected>$type</option>";
+					print "<option value='$type->id' $selected>$type->ctname</option>";
 				}
 				?>
 			</select>

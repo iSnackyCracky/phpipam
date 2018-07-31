@@ -17,24 +17,27 @@ $User->check_user_session();
 $custom_fields = $Tools->fetch_custom_fields('circuits');
 # filter circuits or fetch print all?
 $circuits = $Tools->fetch_all_circuits($custom_fields);
+$circuit_types = $Tools->fetch_all_objects ("circuitTypes", "ctname");
+$type_hash = [];
+foreach($circuit_types as $t){  $type_hash[$t->id] = $t->ctname; }
 
 # strip tags - XSS
 $_GET = $User->strip_input_tags ($_GET);
 
 # title
-print "<h4>"._('List of circuits')."</h4>";
+print "<h4>"._('List of physical circuits')."</h4>";
 print "<hr>";
 
 # print link to manage
 print "<div class='btn-group'>";
 	// add
-	if($User->is_admin(false)) {
+	if($User->is_admin(false) || $User->user->editCircuits=="Yes") {
     print "<a href='' class='btn btn-sm btn-default open_popup' data-script='app/admin/circuits/edit-circuit.php' data-class='700' data-action='add' data-circuitid='' style='margin-bottom:10px;'><i class='fa fa-plus'></i> "._('Add circuit')."</a>";
 	}
 print "</div>";
 
 # table
-print '<table id="circuitManagement" class="table sorted table-striped table-top">';
+print '<table id="circuitManagement" class="table sorted table-striped table-top" data-cookie-id-table="all_circuits">';
 
 # headers
 print "<thead>";
@@ -83,9 +86,9 @@ else {
 
 		//print details
 		print '<tr>'. "\n";
-		print "	<td><strong><a href='".create_link($_GET['page'],"circuits",$circuit->id)."'>$circuit->cid</a></strong></td>";
+		print "	<td><a class='btn btn-xs btn-default' href='".create_link($_GET['page'],"circuits",$circuit->id)."'><i class='fa fa-random prefix'></i> $circuit->cid</a></td>";
 		print "	<td class='description'><a href='".create_link($_GET['page'],"circuits","providers",$circuit->pid)."'>$circuit->name</a></td>";
-		print "	<td>$circuit->type</td>";
+		print "	<td>".$type_hash[$circuit->type]."</td>";
 		print " <td class='hidden-xs hidden-sm'>$circuit->capacity</td>";
 		print " <td class='hidden-xs hidden-sm'>$circuit->status</td>";
 		print "	<td class='hidden-xs hidden-sm'>$locationA_html</td>";

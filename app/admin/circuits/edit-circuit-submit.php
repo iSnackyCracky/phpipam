@@ -5,7 +5,7 @@
  ***************************/
 
 /* functions */
-require( dirname(__FILE__) . '/../../../functions/functions.php');
+require_once( dirname(__FILE__) . '/../../../functions/functions.php' );
 
 # initialize user object
 $Database 	= new Database_PDO;
@@ -23,7 +23,7 @@ $User->check_maintaneance_mode ();
 if(!($User->is_admin(false) || $User->user->editCircuits=="Yes")) { $Result->show("danger", _("You are not allowed to modify Circuit details"), true); }
 
 # validate csrf cookie
-$User->csrf_cookie ("validate", "circuit", $_POST['csrf_cookie']) === false ? $Result->show("danger", _("Invalid CSRF cookie"), true) : "";
+$User->Crypto->csrf_cookie ("validate", "circuit", $_POST['csrf_cookie']) === false ? $Result->show("danger", _("Invalid CSRF cookie"), true) : "";
 # validate action
 $Admin->validate_action ($_POST['action'], true);
 # get modified details
@@ -40,13 +40,24 @@ if($circuit['cid'] == "") 													{ $Result->show("danger", _('Circuit ID i
 if($Tools->fetch_object("circuitProviders","id",$circuit['provider'])===false) { $Result->show("danger", _('Invalid provider').'!', true); }
 
 # validate type
-$type_desc = $Database->getFieldInfo ("circuits", "type");
-$all_types = explode(",", str_replace(array("enum","(",")","'"), "",$type_desc->Type));
-if(!in_array($circuit['type'], $all_types))									{ $Result->show("danger", _('Invalid type').'!', true); }
+$all_types = $Tools->fetch_all_objects ("circuitTypes", "ctname");
+$type_id_array = [];
+foreach($all_types as $t){ array_push($type_id_array, $t->id); }
+
+if(!in_array($circuit['type'], $type_id_array))									{ $Result->show("danger", _('Invalid type').'!', true); }
 
 # status
 $statuses = array ("Active", "Inactive", "Reserved");
 if(!in_array($circuit['status'], $statuses))									{ $Result->show("danger", _('Invalid status').'!', true); }
+
+#Check if circuit is part of a larger circuit
+if($_POST['action'] == 'delete'){
+	$logical_circuit_array = $Tools->fetch_all_logical_circuits_using_circuit($circuit['id']);
+	if(!empty($logical_circuit_array))  		{ $Result->show("danger", _('Circuit is currently used in a larger logical circuit').'!', true); }
+
+}
+
+
 
 # process device / location
 if($circuit['device1']=="0") {
@@ -115,15 +126,15 @@ if(sizeof($custom) > 0) {
 $values = array(
 				"id"        => $circuit['id'],
 				"cid"       => $circuit['cid'],
-				"provider"  => $circuit['provider'],
-				"type"      => $circuit['type'],
-				"capacity"  => $circuit['capacity'],
-				"status"    => $circuit['status'],
-				"device1"   => $circuit['device1'],
-				"location1" => $circuit['location1'],
-				"device2"   => $circuit['device2'],
-				"location2" => $circuit['location2'],
-				"comment"   => $circuit['comment']
+  				"provider"  => $circuit['provider'],
+  				"type"      => $circuit['type'],
+  				"capacity"  => $circuit['capacity'],
+  				"status"    => $circuit['status'],
+  				"device1"   => $circuit['device1'],
+  				"location1" => $circuit['location1'],
+  				"device2"   => $circuit['device2'],
+  				"location2" => $circuit['location2'],
+  				"comment"   => $circuit['comment']
 				);
 # custom fields
 if(isset($update)) {

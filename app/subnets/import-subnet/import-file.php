@@ -5,7 +5,7 @@
  **********************************************/
 
 /* functions */
-require( dirname(__FILE__) . '/../../../functions/functions.php');
+require_once( dirname(__FILE__) . '/../../../functions/functions.php' );
 
 # classes
 $Database 	= new Database_PDO;
@@ -19,6 +19,8 @@ $Result 	= new Result;
 $User->check_user_session();
 # check maintaneance mode
 $User->check_maintaneance_mode ();
+
+$User->Crypto->csrf_cookie ("validate", "import_file", $_POST['csrf_cookie']) === false ? $Result->show("danger", _("Invalid CSRF cookie"), true) : "";
 
 # permissions
 $permission = $Subnets->check_permission ($User->user, $_POST['subnetId']);

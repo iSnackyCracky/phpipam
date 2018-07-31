@@ -5,7 +5,7 @@
  *********************************/
 
 /* functions */
-require( dirname(__FILE__) . '/../../../functions/functions.php');
+require_once( dirname(__FILE__) . '/../../../functions/functions.php' );
 require( dirname(__FILE__) . '/../../../functions/PEAR/Spreadsheet/Excel/Writer.php');
 
 
@@ -80,7 +80,7 @@ foreach ($sections as $section) {
 	//cast
 	$section = (array) $section;
 	// Create a worksheet
-	$worksheet_name = strlen($section['name']) > 30 ? substr($section['name'],0,27).'...' : $section['name'];
+	$worksheet_name = $Tools->shorten_text($section['name'], 30);
 	$worksheet =& $workbook->addWorksheet($worksheet_name);
 	$worksheet->setInputEncoding("utf-8");
 

@@ -23,7 +23,7 @@
  */
 
 # include required scripts
-require( dirname(__FILE__) . '/../functions.php' );
+require_once( dirname(__FILE__) . '/../functions.php' );
 require( dirname(__FILE__) . '/../../functions/classes/class.Thread.php');
 
 # initialize objects
@@ -234,7 +234,7 @@ $Result		= new Result();
 $discovered = 0;				//for mailing
 
 foreach($scan_subnets as $s) {
-	if(sizeof(@$s->discovered)>0) {
+	if(isset($s->discovered)) {
 		foreach($s->discovered as $ip) {
 			// fetch subnet
 			$subnet = $Subnets->fetch_subnet ("id", $s->id);
