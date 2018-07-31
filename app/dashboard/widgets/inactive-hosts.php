@@ -5,7 +5,7 @@
 
 # required functions
 if(!is_object(@$User)) {
-	require( dirname(__FILE__) . '/../../../functions/functions.php' );
+	require_once( dirname(__FILE__) . '/../../../functions/functions.php' );
 	# classes
 	$Database	= new Database_PDO;
 	$User 		= new User ($Database);
@@ -91,7 +91,7 @@ elseif (!isset($out)) {
 # found
 else {
     // table
-    print "<table class='table table-top table-threshold'>";
+    print "<table class='table table-top table-threshold table-condensed'>";
 
     print "<tr>";
     print " <th></th>";
@@ -106,7 +106,7 @@ else {
 
         print "<tr>";
         print " <td><span class='status status-error'></span></td>";
-        print " <td><a href='".create_link("subnets", $s->sectionId, $s->subnetId, "address-details", $s->id)."'>".$Subnets->transform_address($s->ip_addr)."</a></td>";
+        print " <td class='ip_addr'><a href='".create_link("subnets", $s->sectionId, $s->subnetId, "address-details", $s->id)."'>".$Subnets->transform_address($s->ip_addr)."</a></td>";
         print " <td><a href='".create_link("subnets", $s->sectionId, $s->subnetId)."'>".$Subnets->transform_address($s->subnet)."/".$s->mask."</a></td>";
         print " <td>$s->hostname</td>";
         print " <td>$s->lastSeen</td>";

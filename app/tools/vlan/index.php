@@ -8,7 +8,7 @@
 $User->check_user_session();
 
 # fetch all l2 domains
-$vlan_domains = $Tools->fetch_all_objects("vlanDomains", "id");
+$vlan_domains = $Tools->fetch_all_objects("vlanDomains", "name");
 
 # set default domain
 if(sizeof($vlan_domains)==1) { $_GET['subnetId'] = 1; }
@@ -23,5 +23,3 @@ elseif(@$_GET['subnetId']=="all") 								{ include("domain-vlans-all.php"); }
 elseif(sizeof($vlan_domains)>1 && !isset($_GET['subnetId'])) 	{ include("domains.php"); }
 # only 1 domain, print vlans
 else 															{ include("domain-vlans.php"); }
-
-?>

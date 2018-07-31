@@ -6,7 +6,7 @@
  *************************************************/
 
 # include required scripts
-require( dirname(__FILE__) . '/../../../functions/functions.php' );
+require_once( dirname(__FILE__) . '/../../../functions/functions.php' );
 
 # initialize required objects
 $Database 	= new Database_PDO;
@@ -26,10 +26,10 @@ $User->check_maintaneance_mode ();
 
 # validate csrf cookie
 if($_POST['action']=="add") {
-	$User->csrf_cookie ("validate", "address_add", $_POST['csrf_cookie']) === false ? $Result->show("danger", _("Invalid CSRF cookie"), true) : "";
+	$User->Crypto->csrf_cookie ("validate", "address_add", $_POST['csrf_cookie']) === false ? $Result->show("danger", _("Invalid CSRF cookie"), true) : "";
 }
 else {
-	$User->csrf_cookie ("validate", "address_".$_POST['id'], $_POST['csrf_cookie']) === false ? $Result->show("danger", _("Invalid CSRF cookie"), true) : "";
+	$User->Crypto->csrf_cookie ("validate", "address_".$_POST['id'], $_POST['csrf_cookie']) === false ? $Result->show("danger", _("Invalid CSRF cookie"), true) : "";
 }
 
 # validate action
@@ -57,7 +57,7 @@ foreach ($required_ip_fields as $k=>$f) {
 	}
 }
 // checks
-if(is_array($required_ip_fields)) {
+if(is_array($required_ip_fields) && $action!="delete") {
 	// remove modules not enabled from required fields
 	if($User->settings->enableLocations=="0") { unset($required_ip_fields['location_item']); }
 
@@ -117,7 +117,7 @@ $address = $Addresses->reformat_empty_array_fields ($address, null);
 
 # custom fields and checks
 $custom_fields = $Tools->fetch_custom_fields ('ipaddresses');
-if(sizeof($custom_fields) > 0) {
+if(sizeof($custom_fields) > 0 && $action!="delete") {
 	foreach($custom_fields as $field) {
 		# replace possible ___ back to spaces!
 		$field['nameTest']      = str_replace(" ", "___", $field['name']);
